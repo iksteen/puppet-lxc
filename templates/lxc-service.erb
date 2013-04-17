@@ -1,0 +1,12 @@
+[Unit]
+Description=Linux container <%= @instance %>
+After=network.target
+
+[Service]
+Type=forking
+ExecStartPre=/bin/mount --make-rprivate /
+ExecStart=/usr/bin/lxc-start -dn "<%= @instance %>"
+ExecStop=/usr/bin/lxc-stop -n "<%= @instance %>"
+
+[Install]
+WantedBy=multi-user.target

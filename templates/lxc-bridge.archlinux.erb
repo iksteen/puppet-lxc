@@ -1,0 +1,11 @@
+INTERFACE='lxc-bridge'
+CONNECTION='bridge'
+DESCRIPTION='Bridge used by LXC containers'
+BRIDGE_INTERFACES=''
+
+IP='static'
+INTERFACE='lxc-bridge'
+IPCFG=(
+	'addr add dev lxc-bridge <%= @ipaddress %>/<%= @netmask %>'
+	'link set dev lxc-bridge up promisc on'
+)

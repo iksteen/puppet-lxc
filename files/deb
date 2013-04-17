@@ -1,0 +1,15 @@
+pacman -S dpkg debootstrap debian-archive-keyring gnupg1
+debootstrap squeeze /srv/lxc/vmdeb01 --include=locales,netbase,net-tools,iproute
+--variant=minbase
+
+echo 0 > selinux/enforce
+inittab
+hostname
+locale-gen $LANG $(echo $LANG | cut -d. -f2)
+update-locale LANG=$LANG
+/usr/sbin/update-rc.d -f checkroot.sh remove
+/usr/sbin/update-rc.d -f umountfs remove
+/usr/sbin/update-rc.d -f hwclock.sh remove
+/usr/sbin/update-rc.d -f hwclockfirst.sh remove
+udev
+udev-mtab
