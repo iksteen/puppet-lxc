@@ -107,7 +107,7 @@ define lxc::container::bootstrap(
         ensure => absent,
       }
 
-      exec { "lxc-destroy -fn \"${instance}\"":
+      exec { "lxc-destroy -n \"${instance}\"":
         onlyif => "test -f \"${destconfig}\"",
         path   => '/bin:/usr/bin:/usr/local/bin',
       }
