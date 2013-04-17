@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=forking
 ExecStartPre=/bin/mount --make-rprivate /
-ExecStart=/usr/bin/lxc-start -dn "<%= @instance %>"
+ExecStart=/usr/bin/lxc-start -n "<%= @instance %>" -f "<%= @config %>" -d
 ExecStop=/usr/bin/lxc-stop -n "<%= @instance %>"
 
 [Install]

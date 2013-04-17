@@ -12,6 +12,12 @@
 # [*instance*]
 #   The name of the container instance to manage the service for.
 #
+# [*rootfs*]
+#   Specify the location of the root filesystem of the container.
+#
+# [*config*]
+#   Specify the configuration file to create a service for.
+#
 # === Authors
 #
 # Ingmar Steen <iksteen@gmail.com>
@@ -22,18 +28,24 @@
 #
 define lxc::host::service(
     $ensure,
+    $rootfs,
+    $config,
     $instance = $title,
 ) {
   case $::operatingsystem {
     archlinux: {
       lxc::host::archlinux::service { $instance:
         ensure => $ensure,
+        rootfs => $rootfs,
+        config => $config,
       }
     }
 
     debian: {
       lxc::host::debian::service { $instance:
         ensure => $ensure,
+        rootfs => $rootfs,
+        config => $config,
       }
     }
 

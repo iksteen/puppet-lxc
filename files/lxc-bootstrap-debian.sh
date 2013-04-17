@@ -127,6 +127,3 @@ report = true
 certname = ${lxc_hostname}
 EOF
 fi
-
-# Create the lxc lxc_instance
-lxc-create -n "${lxc_instance}" -f "${lxc_config}" || die

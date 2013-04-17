@@ -54,7 +54,8 @@ define lxc::container::bootstrap(
     $command      = undef,
 ) {
   $config     = "/etc/lxc/${instance}.conf"
-  $destconfig = "/var/lib/lxc/${instance}/config"
+
+  include lxc
 
   $rootfs_real = $rootfs ? {
     undef   => "${lxc::rootfs_home}/${instance}",
@@ -68,6 +69,8 @@ define lxc::container::bootstrap(
 
   lxc::host::service { $instance:
     ensure => $ensure,
+    rootfs => $rootfs_real,
+    config => $config,
   }
 
   case $ensure {
@@ -97,19 +100,19 @@ define lxc::container::bootstrap(
           "lxc_puppetserver=${puppetserver}",
         ],
         timeout     => 0,
-        creates     => $destconfig,
+        creates     => $rootfs_real,
         require     => File[$config],
       }
     }
 
     absent: {
-      file { [$config]:
+      file { $config:
         ensure => absent,
       }
 
-      exec { "lxc-destroy -n \"${instance}\"":
-        onlyif => "test -f \"${destconfig}\"",
-        path   => '/bin:/usr/bin:/usr/local/bin',
+      exec { "rm -rf \"${rootfs_real}\"":
+        onlyif => "test -d \"${rootfs_real}\"",
+        path   => ["/bin", "/usr/bin"],
       }
     }
 

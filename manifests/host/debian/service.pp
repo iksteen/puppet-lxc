@@ -14,6 +14,12 @@
 # [*instance*]
 #   Specify the container instance this resource manages.
 #
+# [*rootfs*]
+#   Specify the location of the root filesystem of the container.
+#
+# [*config*]
+#   Specify the configuration file to create a service for.
+#
 # === Authors
 #
 # Ingmar Steen <iksteen@gmail.com>
@@ -24,6 +30,8 @@
 #
 define lxc::host::debian::service(
     $ensure,
+    $rootfs,
+    $config,
     $instance = $title,
 ) {
   if $::operatingsystem != debian {
@@ -42,7 +50,7 @@ define lxc::host::debian::service(
       }
 
       # If the container was added using augeas, start the container
-      exec { "/usr/bin/lxc-start -n ${instance} -f /etc/lxc/${instance}.conf -d":
+      exec { "/usr/bin/lxc-start -n ${instance} -f ${config} -d":
         subscribe   => Augeas["lxc container ${instance}"],
         refreshonly => true,
       }
@@ -59,9 +67,13 @@ define lxc::host::debian::service(
       }
 
       # If the container was removed using augeas, stop the container
-      exec { "/usr/bin/lxc-stop -n ${instance}":
+      exec { "/usr/bin/lxc-stop -n \"${instance}\"":
         subscribe   => Augeas["lxc container ${instance}"],
         refreshonly => true,
+      }
+      
+      if $ensure == absent {
+        Exec["rm -rf \"${rootfs}\""] -> Exec["/usr/bin/lxc-stop -n \"${instance}\""]
       }
     }
 

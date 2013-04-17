@@ -128,6 +128,3 @@ fi
 
 # Clean up
 rm -f "${pacman_conf}"
-
-# Create the lxc lxc_instance
-lxc-create -n "${lxc_instance}" -f "${lxc_config}" || die

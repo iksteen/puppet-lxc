@@ -14,6 +14,12 @@
 # [*instance*]
 #   Specify the container instance this resource manages.
 #
+# [*rootfs*]
+#   Specify the location of the root filesystem of the container.
+#
+# [*config*]
+#   Specify the configuration file to create a service for.
+#
 # === Authors
 #
 # Ingmar Steen <iksteen@gmail.com>
@@ -24,6 +30,8 @@
 #
 define lxc::host::archlinux::service(
     $ensure,
+    $rootfs,
+    $config,
     $instance = $title,
 ) {
   if $::operatingsystem != archlinux {
@@ -73,6 +81,7 @@ define lxc::host::archlinux::service(
       service { $service:
         ensure => stopped,
         enable => false,
+        before => Exec["rm -rf \"${rootfs}\""],
       }
     }
 
