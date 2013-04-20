@@ -107,7 +107,7 @@ ln -snf /usr/lib/systemd/system/netcfg@.service \
 # Install and configure puppet agent
 if [ "x${lxc_puppetserver}" != "x" ]; then
   # Install packages
-  pacstrap -C "${pacman_conf}" -d "${lxc_rootfs}" ruby1.8-puppet || die
+  pacstrap -C "${pacman_conf}" -d "${lxc_rootfs}" puppet || die
 
   # Set up link to master
   (
