@@ -118,7 +118,7 @@ if [ "x${lxc_puppetserver}" != "x" ]; then
   rm -f "${lxc_rootfs}/tmp/puppetlabs-release-${lxc_release}.deb}" || die
   chroot "${lxc_rootfs}" apt-get update || die
   chroot "${lxc_rootfs}" apt-get install -y puppet || die
-  sed -i "s/START=no/START=yes/" "${lxc_rootfs}"/etc/default/puppet" || die
+  sed -i "s/^START=no/START=yes/" "${lxc_rootfs}"/etc/default/puppet || die
   cat >>"${lxc_rootfs}/etc/puppet/puppet.conf" <<EOF
 
 [agent]
