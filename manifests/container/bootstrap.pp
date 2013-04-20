@@ -91,6 +91,8 @@ define lxc::container::bootstrap(
         content => template($template),
       }
 
+      lxc::bridge::ipaddress { "${ipaddress}": }
+
       exec { "lxc-bootstrap ${instance}":
         command     => $command,
         environment => [
