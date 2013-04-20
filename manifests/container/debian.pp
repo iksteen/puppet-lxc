@@ -1,7 +1,7 @@
 # == Resource: lxc::container::debian
 #
-# This class controls the creation and destruction of a Debian Squeeze
-# container.
+# This class controls the creation and destruction of a Debian container. It
+# has been tested with 'squeeze' and 'wheezy' releases.
 #
 # === Parameters
 #
@@ -28,11 +28,14 @@
 #   Specify the puppet server to preconfigure the container to connect to. The
 #   default is to use the same server this agent uses.
 #
+# [*release*]
+#   Specify a debian release to bootstrap. Defaults to 'squeeze'.
+#
 # === Examples
 #
 #  lxc::container::debian { 'lxc_debian01':
-#    ensure     => running,
-#    ipaddress  => '10.0.0.102',
+#    ensure    => running,
+#    ipaddress => '10.0.0.102',
 #  }
 #
 # === Authors
@@ -50,6 +53,7 @@ define lxc::container::debian(
     $rootfs        = undef,
     $lxc_fqdn      = undef,
     $puppetserver  = $::lxc_puppetserver,
+    $release       = 'squeeze',
 ) {
   case $ensure {
     /^(running|stopped)$/: {
@@ -69,6 +73,7 @@ define lxc::container::debian(
         rootfs       => $rootfs,
         fqdn         => $lxc_fqdn,
         puppetserver => $puppetserver,
+        release      => $release,
       }
     }
 
@@ -81,6 +86,7 @@ define lxc::container::debian(
         rootfs       => $rootfs,
         fqdn         => $lxc_fqdn,
         puppetserver => $puppetserver,
+        release      => $release,
       }
     }
 

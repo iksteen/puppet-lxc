@@ -35,6 +35,9 @@
 #   Specify the command to execute to bootstrap the container. Required when
 #   ensure is running or stopped.
 #
+# [*release*]
+#   Specify a release flavor for the bootstrap procedure.
+#
 # === Authors
 #
 # Ingmar Steen <iksteen@gmail.com>
@@ -52,6 +55,7 @@ define lxc::container::bootstrap(
     $instance     = $title,
     $fqdn         = undef,
     $command      = undef,
+    $release      = 'default',
 ) {
   $config     = "/etc/lxc/${instance}.conf"
 
@@ -98,6 +102,7 @@ define lxc::container::bootstrap(
           "lxc_netmask=${lxc::bridge::netmask}",
           "lxc_gateway=${lxc::bridge::ipaddress}",
           "lxc_puppetserver=${puppetserver}",
+          "lxc_release=${release}",
         ],
         timeout     => 0,
         creates     => $rootfs_real,
