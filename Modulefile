@@ -1,5 +1,5 @@
 name    'iksteen-lxc'
-version '0.0.2'
+version '0.0.3'
 source  'git://github.com/iksteen/puppet-lxc.git'
 author  'Ingmar Steen <iksteen@gmail.com>'
 license 'Apache License, Version 2.0'
