@@ -6,9 +6,10 @@ destruction of containers and system services to start and stop them.
 This module also manages a virtual ethernet bridge and network
 masquerading to allow the containers to connect to the world.
 
-Currently this module support creating Arch Linux and Debian Squeeze
-containers on an Arch Linux host and Debian Squeeze containers on a
-Debian Squeeze host. It was designed to be easily extendible.
+Currently this module support creating Arch Linux containers on an Arch
+Linux host and Debian Squeeze and Wheezy containers on an Arch Linux,
+Debian Squeeze or Debian Wheezy host. It was designed to be easily
+extendible.
 
 The network bridge facilitated by this module currently only supports
 NAT. The default settings for the network bridge create a network
@@ -46,4 +47,4 @@ GitHub: http://github.com/iksteen/
 Support
 -------
 
-Please log tickets and issues at my [project site](http://projects.thegraveyard.org)
+Please log issues at the [project site](http://github.com/iksteen/puppet-lxc).
