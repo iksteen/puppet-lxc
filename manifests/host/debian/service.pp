@@ -40,40 +40,96 @@ define lxc::host::debian::service(
 
   case $ensure {
     running: {
-      # Enable the container in /etc/lxc/lxc.conf so it gets started at boot
-      augeas { "lxc container ${instance}":
-        lens    => 'Shellvars_list.lns',
-        incl    => '/etc/default/lxc',
-        changes => [
-          "set CONTAINERS/value[ .= '${instance}' ] '${instance}'",
-        ],
-      }
-
-      # If the container was added using augeas, start the container
-      exec { "/usr/bin/lxc-start -n ${instance} -f ${config} -d":
-        subscribe   => Augeas["lxc container ${instance}"],
-        refreshonly => true,
+      case $::lsbdistcodename {
+        squeeze: {
+          # Enable the container in /etc/lxc/lxc.conf so it gets started at boot
+          augeas { "lxc container ${instance}":
+            lens    => 'Shellvars_list.lns',
+            incl    => '/etc/default/lxc',
+            changes => [
+              "set CONTAINERS/value[ .= '${instance}' ] '${instance}'",
+            ],
+          }
+          # If the container was added using augeas, start the container
+          exec { "/usr/bin/lxc-start -n ${instance} -f ${config} -d":
+            refreshonly => true,
+            subscribe   => Augeas["lxc container ${instance}"],
+          }
+        }
+        wheezy: {
+          # Symlink the container config to auto so it gets stated at boot
+          # Note: This is a bit of a hack, we basically emulate lxc-create
+          file { "/var/lib/lxc/${instance}":
+            ensure => directory,
+          }
+          file { "/var/lib/lxc/${instance}/config":
+            ensure  => file,
+            source  => "/etc/lxc/${instance}.conf",
+            require => File["/etc/lxc/${instance}.conf"],
+          }
+          file { "/var/lib/lxc/${instance}/rootfs":
+            ensure => link,
+            target => $rootfs,
+          }
+          file { "/etc/lxc/auto/${instance}":
+            ensure => link,
+            target => "/var/lib/lxc/${instance}/config",
+          }
+          # If the container was symlinked, start the container
+          exec { "/usr/bin/lxc-start -n ${instance} -f /etc/lxc/auto/${instance} -d":
+            refreshonly => true,
+            subscribe   => File["/etc/lxc/auto/${instance}"],
+          }
+        }
+        default: {
+          fail("lxc::host::debian::service not supported on ${::lsbdistcodename}")
+        }
       }
     }
 
     /^(stopped|absent)$/: {
-      # Disable the container in /etc/lxc/lxc.conf
-      augeas { "lxc container ${instance}":
-        lens    => 'Shellvars_list.lns',
-        incl    => '/etc/default/lxc',
-        changes => [
-          "rm CONTAINERS/value[ .= '${instance}' ]",
-        ],
+      case $::lsbdistcodename {
+        squeeze: {
+          # Disable the container in /etc/lxc/lxc.conf
+          augeas { "lxc container ${instance}":
+            lens    => 'Shellvars_list.lns',
+            incl    => '/etc/default/lxc',
+            changes => [
+              "rm CONTAINERS/value[ .= '${instance}' ]",
+            ],
+          }
+
+          # If the container was removed using augeas, stop the container
+          exec { "/usr/bin/lxc-stop -n \"${instance}\"":
+            refreshonly => true,
+            subscribe   => Augeas["lxc container ${instance}"],
+          }
+        }
+        wheezy: {
+          # Remove lxc support files
+          file { "/etc/lxc/auto/${instance}":
+            ensure => absent,
+          }
+
+          # If the container symlink removed, stop the container
+          exec { "/usr/bin/lxc-stop -n \"${instance}\"":
+            refreshonly => true,
+            subscribe   => File["/etc/lxc/auto/${instance}"],
+          }
+          
+          if $ensure == absent {
+            file { "/var/lib/lxc/${instance}":
+              ensure => absent,
+            }
+          }
+        }
+        default: {
+          fail("lxc::host::debian::service not supported on ${::lsbdistcodename}")
+        }
       }
 
-      # If the container was removed using augeas, stop the container
-      exec { "/usr/bin/lxc-stop -n \"${instance}\"":
-        subscribe   => Augeas["lxc container ${instance}"],
-        refreshonly => true,
-      }
-      
       if $ensure == absent {
-        Exec["rm -rf \"${rootfs}\""] -> Exec["/usr/bin/lxc-stop -n \"${instance}\""]
+        Exec["/usr/bin/lxc-stop -n \"${instance}\""] -> Exec["rm -rf \"${rootfs}\""]
       }
     }
 
