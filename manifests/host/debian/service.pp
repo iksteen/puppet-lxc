@@ -116,7 +116,7 @@ define lxc::host::debian::service(
             refreshonly => true,
             subscribe   => File["/etc/lxc/auto/${instance}"],
           }
-          
+
           if $ensure == absent {
             file { "/var/lib/lxc/${instance}":
               ensure => absent,

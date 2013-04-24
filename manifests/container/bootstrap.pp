@@ -91,7 +91,7 @@ define lxc::container::bootstrap(
         content => template($template),
       }
 
-      lxc::bridge::ipaddress { "${ipaddress}": }
+      lxc::bridge::ipaddress { $ipaddress: }
 
       exec { "lxc-bootstrap ${instance}":
         command     => $command,
@@ -119,7 +119,7 @@ define lxc::container::bootstrap(
 
       exec { "rm -rf \"${rootfs_real}\"":
         onlyif => "test -d \"${rootfs_real}\"",
-        path   => ["/bin", "/usr/bin"],
+        path   => ['/bin', '/usr/bin'],
       }
     }
 
