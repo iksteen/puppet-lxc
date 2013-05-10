@@ -30,8 +30,8 @@
 # Copyright 2013 Ingmar Steen, unless otherwise noted.
 #
 class lxc::bridge::linux(
-    $forward    = true,
-    $masquerade = true,
+    $forward    = false,
+    $masquerade = false,
 ) {
   if $::kernel != linux {
     fail("lxc::bridge::linux not supported on ${::kernel}")
